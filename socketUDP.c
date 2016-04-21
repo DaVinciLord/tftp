@@ -44,3 +44,11 @@ int attacherSocketUDP(SocketUDP *sock, const char *address, uint16_t port, int f
 int estAttachee(SocketUDP *socket) {
 	return (socket->is_bound == 1) ? 0 : -1 ;
 }
+
+int writeToSocketUDP(SocketUDP *socket, const AdresseInternet *dst, char *buffer, size_t length) {
+	return 0;
+}
+
+int recvFromSocketUDP(SocketUDP *socket, char *response, size_t replength, AdresseInternet *connexion, int timeout) {
+	return 0;
+}
