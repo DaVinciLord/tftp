@@ -34,3 +34,4 @@ char *extract_file(char *buffer);
 char *extract_mode(char *buffer, int size);
 errcode extract_errcode(char *buffer);
 char *extract_err_msg(char *buffer);
+char *extract_data(char *buffer);

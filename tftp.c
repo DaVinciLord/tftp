@@ -1,4 +1,5 @@
 #include "tftp.h"
+#include "socketUDP.h"
 
 int tftp_make_ack(char *buffer, size_t *length, uint16_t block) {
 	if (buffer == NULL || length == NULL) return -1;
@@ -79,6 +80,11 @@ errcode extract_errcode(char *buffer) {
 char *extract_err_msg(char *buffer) {
 	return buffer + 4;
 }
+
+char *extract_data(char *buffer) {
+	return buffer + 4;
+}
+
 /*
 void tftp_send_error(SocketUDP *socket, const AdresseInternet *dst, uint16_t code, const char *msg) {
 	char buffer[TFTP_SIZE];
@@ -86,6 +92,7 @@ void tftp_send_error(SocketUDP *socket, const AdresseInternet *dst, uint16_t cod
 	tftp_make_error(buffer, &length, code, msg);
 	writeToSocketUDP(socket, dst, buffer, length);
 }
+
 
 int tftp_send_RRQ_wait_DATA_with_timeout(SocketUDP *socket, const AdresseInternet *dst, const char *file, AdresseInternet *connexion, char *response, size_t *replength) {
 	if (socket == NULL || dst == NULL || file == NULL || connexion == NULL || response == NULL || replength == NULL) return -1;

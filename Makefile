@@ -1,6 +1,6 @@
 CC = gcc
-#CFLAGS = -Wall -Werror -Wextra -pedantic -std=c11 -D_XOPEN_SOURCE=700
-CFLAGS = -D_XOPEN_SOURCE=700
+CFLAGS = -Wall -Werror -Wextra -pedantic -std=c11 -D_XOPEN_SOURCE=700
+#CFLAGS = -D_XOPEN_SOURCE=700
 
 # définition des bibliothèques à utiliser lors de l'édition de lien de
 # droite à gauche par ordre de dépendance. Les bibliothèques sont
@@ -9,8 +9,8 @@ CFLAGS = -D_XOPEN_SOURCE=700
 # de lien utilisera, en fonction des fichiers trouvés, soit: les
 # bibliothèques dynamiques (libAdresseInternet.so), statiques
 # (libAdresseInternet.a) ou les fichiers objets (AdresseInternet.o)
-LDLIBS = -lAdresseInternet -lsocketUDP -lTFTP
-LIBS = libAdresseInternet.a libsocketUDP.a libTFTP.a
+LDLIBS = -lAdresseInternet -lSocketUDP -lTFTP
+LIBS = libAdresseInternet.a libSocketUDP.a libTFTP.a
 
 # non standard, mais on peut définir une macro contenant tous les
 # exécutables du projet:
@@ -21,12 +21,12 @@ LIBS = libAdresseInternet.a libsocketUDP.a libTFTP.a
 all: $(LIBS)
 
 test_tftp_make: test_tftp_make.c all
-	gcc $(CFLAGS) $< libTFTP.a  -o test_tftp_make
+	gcc $(CFLAGS) $< $(LIBS)  -o test_tftp_make
 
 libTFTP.a: tftp.o
 	ar r $@ $<
 
-libsocketUDP.a: socketUDP.o
+libSocketUDP.a: socketUDP.o
 	ar r $@ $<
 
 libAdresseInternet.a: AdresseInternet.o
