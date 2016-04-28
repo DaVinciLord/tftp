@@ -9,6 +9,7 @@
 #define TFTP_SIZE 512
 #define TIMEOUT 42
 #define TRANSFER_TYPE "octet"
+#define NB_MAX_ENVOI 10
 enum {
     RRQ = 1, WRQ = 2, DATA = 3,ACK = 4, ERROR = 5
 };
@@ -26,7 +27,9 @@ int tftp_make_data(char *buffer, size_t *length, uint16_t block, const char *dat
 int tftp_make_error(char *buffer, size_t *length, uint16_t error_code, const char *message);
 void tftp_send_error(SocketUDP *socket, const AdresseInternet *dst, uint16_t code, const char *msg);
 int tftp_send_RRQ_wait_DATA_with_timeout(SocketUDP *socket, const AdresseInternet *dst, const char *fichier, AdresseInternet *connexion, char *reponse, size_t *replength);
+int tftp_send_RRQ_wait_DATA(SocketUDP *socket, const AdresseInternet *dst, const char *file, AdresseInternet *connexion, char *response, size_t *replength);
 int tftp_send_DATA_wait_ACK(SocketUDP *socket, const AdresseInternet *dst, uint16_t block, const char *paquet, size_t paquetlen, AdresseInternet *connexion, char *response, size_t replength);
+int tftp_send_ACK_wait_DATA(SocketUDP *socket, const AdresseInternet *dst, uint16_t block, AdresseInternet *connexion, char *response, size_t replength);
 int tftp_send_last_ACK(SocketUDP *socket, const AdresseInternet *dst, uint16_t block);
 opcode extract_type(char *buffer);
 int extract_blocknumber(char *buffer);

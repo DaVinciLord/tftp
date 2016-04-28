@@ -25,6 +25,8 @@ void AdresseInternet_free (AdresseInternet *adresse);
 int AdresseInternet_getinfo (AdresseInternet *adresse, char *nomDNS, int tailleDNS, char *nomPort, int taillePort);
 int AdresseInternet_getIP (const AdresseInternet *adresse, char *IP, int tailleIP);
 uint16_t AdresseInternet_getPort (const AdresseInternet *adresse);
+int sockaddr_to_AdresseInternet (const struct sockaddr *addr, AdresseInternet *adresse);
+int AdresseInternet_to_sockaddr (const AdresseInternet *adresse, struct sockaddr *addr);
 
 
 #endif // ADRESSEINTERNETTYPE_H_

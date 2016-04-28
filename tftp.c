@@ -85,7 +85,7 @@ char *extract_data(char *buffer) {
 	return buffer + 4;
 }
 
-/*
+
 void tftp_send_error(SocketUDP *socket, const AdresseInternet *dst, uint16_t code, const char *msg) {
 	char buffer[TFTP_SIZE];
 	size_t length;
@@ -115,6 +115,13 @@ int tftp_send_RRQ_wait_DATA_with_timeout(SocketUDP *socket, const AdresseInterne
     return 0;
 }
 
+int tftp_send_RRQ_wait_DATA(SocketUDP *socket, const AdresseInternet *dst, const char *file, AdresseInternet *connexion, char *response, size_t *replength) {
+	for (int i = 0; i < NB_MAX_ENVOI; i++) {
+		if (tftp_send_RRQ_wait_DATA_with_timeout(socket, dst, file, connexion, response, replength)) return 1;
+	}
+	return 0;
+}
+
 int tftp_send_DATA_wait_ACK(SocketUDP *socket, const AdresseInternet *dst, uint16_t block, const char *paquet, size_t paquetlen, AdresseInternet *connexion, char *response, size_t replength) {
 	if (socket == NULL || dst == NULL || paquet == NULL) return -1;
     char buffer[TFTP_SIZE]; // 512 pour TFPT_SIZE
@@ -135,6 +142,26 @@ int tftp_send_DATA_wait_ACK(SocketUDP *socket, const AdresseInternet *dst, uint1
     return 0;
 }
 
+int tftp_send_ACK_wait_DATA(SocketUDP *socket, const AdresseInternet *dst, uint16_t block, AdresseInternet *connexion, char *response, size_t replength) {
+	if (socket == NULL || dst == NULL) return -1;
+    char buffer[TFTP_SIZE]; // 512 pour TFPT_SIZE
+    size_t length;
+    if (tftp_make_ack(buffer, &length, block) < 0) {
+        return -1;
+    }
+    if (writeToSocketUDP(socket, dst, buffer, length) < 0) {
+        return -1;
+    }
+    int n = recvFromSocketUDP(socket, response, replength, connexion, TIMEOUT);
+    if (n < 0) return -1;
+    uint16_t * tmp = (uint16_t *)response;
+    uint16_t r = htons(*tmp);
+    if(r != DATA) {
+        tftp_send_error(socket, connexion, 4, "");
+    }
+    return 0;
+}
+
 int tftp_send_last_ACK(SocketUDP *socket, const AdresseInternet *dst, uint16_t block) {
 	if (socket == NULL || dst == NULL) return -1;
     char buffer[TFTP_SIZE]; // 512 pour TFPT_SIZE
@@ -147,4 +174,4 @@ int tftp_send_last_ACK(SocketUDP *socket, const AdresseInternet *dst, uint16_t b
     }
     return 0;
 }
-*/
+

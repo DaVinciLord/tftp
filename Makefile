@@ -20,7 +20,7 @@ LIBS = libAdresseInternet.a libSocketUDP.a libTFTP.a
 # exécute "make" sans argument.
 all: $(LIBS)
 
-test_tftp_make: test_tftp_make.c all
+client: client.c all
 	gcc $(CFLAGS) $< $(LIBS)  -o test_tftp_make
 
 libTFTP.a: tftp.o

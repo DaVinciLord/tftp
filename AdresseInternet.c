@@ -15,7 +15,7 @@ AdresseInternet *AdresseInternet_new (const char* adresse, uint16_t port) {
     hints.ai_flags |= AI_CANONNAME;
     sprintf(service, "%d", port); 
     if((err = getaddrinfo(adresse, service, &hints, &res)) != 0) {
-        printf(gai_strerror(err));
+        printf("%s", gai_strerror(err));
         exit(EXIT_FAILURE);
     }
     /* Si l'appel a réussi on récupere la première adresse disponible */
@@ -92,4 +92,35 @@ uint16_t AdresseInternet_getPort (const AdresseInternet *adresse) {
     uint16_t port = 0;
     port = atoi(adresse->service);
     return port;
+}
+
+
+int sockaddr_to_AdresseInternet (const struct sockaddr *addr, AdresseInternet *adresse) {
+    if(addr == NULL || adresse == NULL ) {
+        return -1;
+    }
+    if(addr->sa_family == AF_INET) {
+        struct sockaddr_in* tmp = (struct sockaddr_in*)addr;
+        memcpy(&adresse->sockAddr, addr, sizeof(*tmp));
+        sprintf(adresse->nom, "%d", (int)tmp->sin_addr.s_addr);
+        sprintf(adresse->service, "%hu", tmp->sin_port);
+    } else if (addr->sa_family == AF_INET6) {
+        struct sockaddr_in6* tmp = (struct sockaddr_in6*)addr;
+        memcpy(&adresse->sockAddr, addr, sizeof(*tmp));
+        sprintf(adresse->nom, "%s", tmp->sin6_addr.s6_addr);
+        sprintf(adresse->service, "%hu", tmp->sin6_port);
+    }
+    return 0;
+}
+
+int AdresseInternet_to_sockaddr (const AdresseInternet *adresse, struct sockaddr *addr) {
+    if(adresse == NULL || addr == NULL) {
+        return -1;
+    }
+    if(adresse->sockAddr.ss_family == AF_INET) {
+        memcpy(addr, (struct sockaddr_in*)&adresse->sockAddr, sizeof(struct sockaddr_in));
+    } else if(adresse->sockAddr.ss_family == AF_INET6) {
+        memcpy(addr, (struct sockaddr_in6*)&adresse->sockAddr, sizeof(struct sockaddr_in6));
+    }
+    return 0;
 }

@@ -6,7 +6,7 @@
 #include <string.h>
 
 #include "socketUDP.h"
-
+#include "AdresseInternetType.h"
 int initSocketUDP(SocketUDP *psocket) {
 	psocket->sockfd = socket(AF_INET, SOCK_DGRAM, 0);
 	if(psocket->sockfd == -1) {
@@ -15,6 +15,9 @@ int initSocketUDP(SocketUDP *psocket) {
 	
 	return 0;
 }
+
+
+
 
 int attacherSocketUDP(SocketUDP *sock, const char *address, uint16_t port, int flags) {
 
@@ -46,9 +49,24 @@ int estAttachee(SocketUDP *socket) {
 }
 
 int writeToSocketUDP(SocketUDP *socket, const AdresseInternet *dst, char *buffer, size_t length) {
-	return 0;
+	if(socket == NULL || dst == NULL || buffer == NULL) {
+        return -1;
+    }
+    struct sockaddr sockAddr;
+    AdresseInternet_to_sockaddr(dst, &sockAddr);
+    return sendto(socket->sockfd, buffer, (size_t)length, 0, &sockAddr, sizeof(sockAddr));
+
+	
+	
 }
 
 int recvFromSocketUDP(SocketUDP *socket, char *response, size_t replength, AdresseInternet *connexion, int timeout) {
-	return 0;
+if (socket == NULL &&
+response == NULL &&
+replength == 0 &&
+connexion == NULL &&
+timeout == 0) printf("Werror sucks"); 
+return 1;
 }
+
+
