@@ -10,7 +10,7 @@ CFLAGS = -Wall -Werror -Wextra -pedantic -std=c11 -D_XOPEN_SOURCE=700
 # bibliothèques dynamiques (libAdresseInternet.so), statiques
 # (libAdresseInternet.a) ou les fichiers objets (AdresseInternet.o)
 LDLIBS = -lAdresseInternet -lSocketUDP -lTFTP
-LIBS = libAdresseInternet.a libSocketUDP.a libTFTP.a
+LIBS =  libTFTP.a libSocketUDP.a libAdresseInternet.a
 
 # non standard, mais on peut définir une macro contenant tous les
 # exécutables du projet:
@@ -21,7 +21,7 @@ LIBS = libAdresseInternet.a libSocketUDP.a libTFTP.a
 all: $(LIBS)
 
 client: client.c all
-	gcc $(CFLAGS) $< $(LIBS)  -o test_tftp_make
+	gcc $(CFLAGS) $< $(LIBS)  -o client
 
 libTFTP.a: tftp.o
 	ar r $@ $<

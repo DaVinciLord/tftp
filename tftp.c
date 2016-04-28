@@ -92,6 +92,33 @@ void tftp_send_error(SocketUDP *socket, const AdresseInternet *dst, uint16_t cod
 	tftp_make_error(buffer, &length, code, msg);
 	writeToSocketUDP(socket, dst, buffer, length);
 }
+/*
+int tftp_wait_RRQ_send_DATA(SocketUDP *socket, const AdresseInternet *dst, const char *file, AdresseInternet *connexion, char *response, size_t *replength) {
+	if (socket == NULL || dst == NULL || file == NULL || connexion == NULL || response == NULL || replength == NULL) return -1;
+    char buffer[TFTP_SIZE]; // 512 pour TFPT_SIZE
+    size_t length;
+    ssize_t n = recvFromSocketUDP(socket, response, sizeof(buffer), connexion, TIMEOUT);
+    if (n < 0) return -1;
+    uint16_t * tmp = (uint16_t *)response;
+    uint16_t r = htons(*tmp);
+    if(r != RRQ) {
+        tftp_send_error(socket, connexion, 4, "");    
+    }
+    
+    if (writeToSocketUDP(socket, dst, buffer, length) < 0) {
+        return -1;
+    }
+    file = extract_file(buffer);
+    *replength = n;
+    if (tftp_make_data(buffer, &length, 0, paquet, paquetlen) < 0) {
+        return -1;
+    }
+    if (writeToSocketUDP(socket, dst, buffer, length) < 0) {
+        return -1;
+    }
+    
+    return 0;
+}*/
 
 
 int tftp_send_RRQ_wait_DATA_with_timeout(SocketUDP *socket, const AdresseInternet *dst, const char *file, AdresseInternet *connexion, char *response, size_t *replength) {
