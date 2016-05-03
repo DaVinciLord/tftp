@@ -22,6 +22,9 @@ all: $(LIBS)
 
 client: client.c all
 	gcc $(CFLAGS) $< $(LIBS)  -o client
+	
+test_socket_udp: test_socket_udp.c all
+	gcc $(CFLAGS) $< $(LIBS)  -o test_socket_udp
 
 libTFTP.a: tftp.o
 	ar r $@ $<
