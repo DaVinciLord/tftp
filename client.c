@@ -6,39 +6,38 @@
 #include <unistd.h>
 
 #include "tftp.h"
-#define ADDR_SERVER "10.130.162.32"
-#define TFTP_PORT 6969
+#define TFTP_PORT 5555
 #define FILENAME "lenarraypourlesnuls.txt"
 
 int main(void) {
-	
-	SocketUDP *sock = (SocketUDP *)malloc(sizeof(SocketUDP));
+	SocketUDP *sock = createSocketUDP();
     initSocketUDP(sock);
-    AdresseInternet *connexion =(AdresseInternet *)malloc(sizeof(AdresseInternet));
+    AdresseInternet *server = AdresseInternet_loopback(6969);
     char reponse[TFTP_SIZE];
     size_t replength;
     int block = 0;
-    if (attacherSocketUDP(sock, ADDR_SERVER, TFTP_PORT, 0) != 0) {
-        perror("attacherSocketUDP");
+    if (attacherSocketUDP(sock, NULL, TFTP_PORT, INADDR_LOOPBACK) != 0) {
+        fprintf(stderr, "attacherSocketUDP");
         return EXIT_FAILURE;
     }
-    
-    
-    if (tftp_send_RRQ_wait_DATA(sock, sock->addr, FILENAME, connexion, reponse, &replength) != 1) {
-        perror("tftp_send_RRQ_wait_DATA");
+
+    if (tftp_send_RRQ_wait_DATA(sock, sock->addr, FILENAME, server, reponse, &replength) != 0) {
+        fprintf(stderr, "erreur tftp_send_RRQ_wait_DATA\n");
         return EXIT_FAILURE;
     }
-    
-    printf("%s\n", reponse);
+
+    printf("%s\n", extract_data(reponse));
     while (replength == TFTP_SIZE) {
-	if ( tftp_send_ACK_wait_DATA(sock, sock->addr, block, connexion, reponse, replength) != 0) {
-        perror("tftp_send_ACK_wait_DATA");
-        return EXIT_FAILURE;        
-    }
-    printf("%s\n", reponse);
+        if (tftp_send_ACK_wait_DATA(sock, sock->addr, block, server, reponse, replength) != 0) {
+            fprintf(stderr, "erreur tftp_send_ACK_wait_DATA\n");
+            return EXIT_FAILURE;        
+        }
+         printf("%s\n", extract_data(reponse));
 	
     }
-	tftp_send_last_ACK(sock, connexion, block);
+
+	tftp_send_last_ACK(sock, server, block);
     close(sock->sockfd);
+    AdresseInternet_free(server);
 	free(sock);
 }

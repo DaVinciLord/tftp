@@ -36,7 +36,7 @@ int attacherSocketUDP(SocketUDP *sock, const char *address, uint16_t port, int f
 				sock->addr = AdresseInternet_loopback(port);
 				break;
 			case 0 : 
-				sock->addr = AdresseInternet_new(INADDR_ANY, port);
+				sock->addr = AdresseInternet_any(port);
 				break;
 			default : 
 				return -1;

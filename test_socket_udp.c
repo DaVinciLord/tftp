@@ -13,9 +13,10 @@ int main (void) {
     AdresseInternet *addr = (AdresseInternet*)malloc(sizeof(AdresseInternet));
     memset(addr, 0, sizeof(*addr));
     initSocketUDP(sock);
-    attacherSocketUDP(sock, NULL, 5555, 0);
-    recvFromSocketUDP(sock, buffer, sizeof(buffer), addr, 100);
-        printf("coucou\n");
+    
+    attacherSocketUDP(sock, NULL, 5555, INADDR_LOOPBACK);
+
+    recvFromSocketUDP(sock, buffer, sizeof(buffer), addr, 3);
 
     AdresseInternet_getIP(addr, ip, sizeof(ip));
     printf("%s\n", ip);

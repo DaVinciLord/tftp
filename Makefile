@@ -23,6 +23,9 @@ all: $(LIBS)
 client: client.c all
 	gcc $(CFLAGS) $< $(LIBS)  -o client
 	
+server: server.c all
+	gcc $(CFLAGS) $< $(LIBS)  -o server
+	
 test_socket_udp: test_socket_udp.c all
 	gcc $(CFLAGS) $< $(LIBS)  -o test_socket_udp
 

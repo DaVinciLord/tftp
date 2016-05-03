@@ -1,32 +1,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "client.h"
+#include "server.h"
 #include "socketUDP.h"
 
 #include "tftp.h"
-#define ADDR_SERVER "10.123.123.01"
 #define TFTP_PORT 6969
 
 
 int main(void) {
 	
-	SocketUDP *sock = (SocketUDP *)malloc(sizeof(SocketUDP));
+	SocketUDP *sock = createSocketUDP();
     initSocketUDP(sock);
-    AdresseInternet *connexion =(AdresseInternet *)malloc(sizeof(AdresseInternet));
-    char reponse[TFTP_SIZE];
-    size_t replength;
-    int block = 0;
-    
-    attacherSocketUDP(sock, ADDR_SERVER, TFTP_PORT, 0);
-    
-    
-    tftp_wait_RRQ_send_DATA(sock, sock->addr, FILENAME, connexion, reponse, &replength); //à tester
+    attacherSocketUDP(sock, NULL, TFTP_PORT, 0);
+    AdresseInternet *client_addr =(AdresseInternet *)malloc(sizeof(AdresseInternet));
+    char buffer[TFTP_SIZE];
+    //int block = 0;
+    size_t filename_len;
+    char filename[255];
+    tftp_wait_RRQ(sock, client_addr, buffer, filename, &filename_len); 
+    printf("RRQ reçu, fichier demandé = %s , de taille nom de fichier = %d\n", filename, (int)filename_len);
 
-    while (replength == TFTP_SIZE) {
-	tftp_send_ACK_wait_DATA(sock, sock->addr, block, connexion, reponse, replength); //à tester
-    printf("%s", reponse);
-	}
-	tftp_send_last_ACK(sock, connexion, block);
 	free(sock);
 }

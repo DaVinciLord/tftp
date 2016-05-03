@@ -7,7 +7,7 @@
 #include "socketUDP.h"
 
 #define TFTP_SIZE 512
-#define TIMEOUT 42
+#define TIMEOUT 30000
 #define TRANSFER_TYPE "octet"
 #define NB_MAX_ENVOI 10
 enum {
@@ -31,6 +31,7 @@ int tftp_send_RRQ_wait_DATA(SocketUDP *socket, const AdresseInternet *dst, const
 int tftp_send_DATA_wait_ACK(SocketUDP *socket, const AdresseInternet *dst, uint16_t block, const char *paquet, size_t paquetlen, AdresseInternet *connexion, char *response, size_t replength);
 int tftp_send_ACK_wait_DATA(SocketUDP *socket, const AdresseInternet *dst, uint16_t block, AdresseInternet *connexion, char *response, size_t replength);
 int tftp_send_last_ACK(SocketUDP *socket, const AdresseInternet *dst, uint16_t block);
+int tftp_wait_RRQ(SocketUDP *socket, AdresseInternet *connexion, char *buffer, char *filename, size_t *filename_len);
 opcode extract_type(char *buffer);
 int extract_blocknumber(char *buffer);
 char *extract_file(char *buffer);
