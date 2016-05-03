@@ -13,7 +13,7 @@ int main() {
 	printf("ACK = %d\t%d\n", extract_opcode(ack), extract_blocknumber(ack));
 	
 	char rrq[TFTP_SIZE];
-	const char *file = "lenarraypourlesnuls.txtlenarraypourlesnuls.txtlenarraypourlesnuls.txtlenarraypourlesnuls.txtlenarraypourlesnuls.txtlenarraypourlesnuls.txtlenarraypourlesnuls.txtlenarraypourlesnuls.txtlenarraypourlesnuls.txtlenarraypourlesnuls.txtlenarraypourlesnuls.txtlenarraypourlesnuls.txtlenarraypourlesnuls.txtlenarraypourlesnuls.txtlenarraypourlesnuls.txtlenarraypourlesnuls.txtlenarraypourlesnuls.txtlenarraypourlesnuls.txtlenarraypourlesnuls.txtlenarraypourlesnuls.txtlenarraypourlesnuls.txtfhdskfhdsj";
+	const char *file = "lenarraypourlesnuls.txt";
 	tftp_make_rrq(rrq, &length, file);
 	printf("%lu\n", length);
 	printf("RRQ = %d\t%s\t%s\n", extract_opcode(rrq),extract_file(rrq),extract_mode(rrq, sizeof(opcode) + strlen(extract_file(rrq)) + 1));
