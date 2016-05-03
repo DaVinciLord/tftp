@@ -7,7 +7,7 @@
 
 #include "tftp.h"
 #define TFTP_PORT 5555
-#define FILENAME "lenarraypourlesnuls.txt"
+#define FILENAME "lenarraypourlesnuls.txt\0"
 
 int main(void) {
 	SocketUDP *sock = createSocketUDP();
@@ -21,7 +21,7 @@ int main(void) {
         return EXIT_FAILURE;
     }
 
-    if (tftp_send_RRQ_wait_DATA(sock, sock->addr, FILENAME, server, reponse, &replength) != 0) {
+    if (tftp_send_RRQ_wait_DATA(sock, server, FILENAME, sock->addr, reponse, &replength) != 0) {
         fprintf(stderr, "erreur tftp_send_RRQ_wait_DATA\n");
         return EXIT_FAILURE;
     }

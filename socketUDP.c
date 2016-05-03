@@ -99,7 +99,6 @@ int recvFromSocketUDP(SocketUDP *socket, char *response, size_t replength, Adres
     memset(&sockAddr, 0, sizeof(struct sockaddr));
     socklen_t *addr_length = (socklen_t*)malloc(sizeof(*addr_length));
     *addr_length = sizeof(struct sockaddr);
-    
     /**
      * Gestion du timeout
      */
@@ -121,7 +120,6 @@ int recvFromSocketUDP(SocketUDP *socket, char *response, size_t replength, Adres
     if(FD_ISSET(socket->sockfd, &read_fds)) {
        size = recvfrom(socket->sockfd, response, (size_t)replength, 0, &sockAddr, addr_length);
     }
-    
     sockaddr_to_AdresseInternet(&sockAddr, connexion); 
     free(addr_length);
     return size;

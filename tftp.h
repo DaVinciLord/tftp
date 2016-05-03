@@ -10,7 +10,7 @@
 #include "socketUDP.h"
 
 #define TFTP_SIZE 512
-#define TIMEOUT 30000
+#define TIMEOUT 10
 #define NB_MAX_ENVOI 10
 #define BINARY_TRANSFER "octet"
 
