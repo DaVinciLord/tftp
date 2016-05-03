@@ -20,7 +20,7 @@ int tftp_make_rrq(char *buffer, size_t *length, const char *file) {
 	strncpy(buffer + n, BINARY_TRANSFER, strlen(BINARY_TRANSFER) + 1);
 	n += strlen(BINARY_TRANSFER) + 1;
 	*(buffer + n) = '\0';
-	*length = n + 1;
+	*length = n;
     return 0;
 }
 
