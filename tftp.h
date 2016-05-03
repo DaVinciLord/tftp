@@ -1,3 +1,6 @@
+#ifndef TFTP_H_
+#define TFTP_H_
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,8 +11,9 @@
 
 #define TFTP_SIZE 512
 #define TIMEOUT 30000
-#define TRANSFER_TYPE "octet"
 #define NB_MAX_ENVOI 10
+#define BINARY_TRANSFER "octet"
+
 enum {
     RRQ = 1, WRQ = 2, DATA = 3,ACK = 4, ERROR = 5
 };
@@ -32,10 +36,12 @@ int tftp_send_DATA_wait_ACK(SocketUDP *socket, const AdresseInternet *dst, uint1
 int tftp_send_ACK_wait_DATA(SocketUDP *socket, const AdresseInternet *dst, uint16_t block, AdresseInternet *connexion, char *response, size_t replength);
 int tftp_send_last_ACK(SocketUDP *socket, const AdresseInternet *dst, uint16_t block);
 int tftp_wait_RRQ(SocketUDP *socket, AdresseInternet *connexion, char *buffer, char *filename, size_t *filename_len);
-opcode extract_type(char *buffer);
+opcode extract_opcode(char *buffer);
 int extract_blocknumber(char *buffer);
 char *extract_file(char *buffer);
 char *extract_mode(char *buffer, int size);
 errcode extract_errcode(char *buffer);
 char *extract_err_msg(char *buffer);
 char *extract_data(char *buffer);
+
+#endif // TFTP_H_

@@ -28,6 +28,9 @@ server: server.c all
 	
 test_socket_udp: test_socket_udp.c all
 	gcc $(CFLAGS) $< $(LIBS)  -o test_socket_udp
+	
+test_tftp_make: test_tftp_make.c all
+	gcc $(CFLAGS) $< $(LIBS)  -o test_tftp_make
 
 libTFTP.a: tftp.o
 	ar r $@ $<

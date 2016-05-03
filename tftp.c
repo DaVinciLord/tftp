@@ -14,14 +14,13 @@ int tftp_make_rrq(char *buffer, size_t *length, const char *file) {
 	if (buffer == NULL || length == NULL || file == NULL) return -1;
 	uint16_t *packet = (uint16_t *) buffer;
 	*packet = htons(RRQ);
-	memcpy(buffer + 2, file, strlen(file));
-	int n = 2 + sizeof(file);
+	int n = sizeof(opcode);
+	strncpy(buffer + sizeof(opcode), file, strlen(file) + 1);
+	n +=  strlen(file) + 1;
+	strncpy(buffer + n, BINARY_TRANSFER, strlen(BINARY_TRANSFER) + 1);
+	n += strlen(BINARY_TRANSFER) + 1;
 	*(buffer + n) = '\0';
-	n += 1;
-	memcpy(buffer + n, TRANSFER_TYPE, sizeof(TRANSFER_TYPE));
-	n += sizeof(TRANSFER_TYPE);
-	*(buffer + n) = '\0';
-    *length = n + 1;
+	*length = n + 1;
     return 0;
 }
 
@@ -30,12 +29,14 @@ int tftp_make_data(char *buffer, size_t *length, uint16_t block, const char *dat
 	//buffer deja alloué;
     if (buffer == NULL || data == NULL || length == NULL) return -1;
     // Taille du fichier indiquant qu'on envoie le dernier paquet.
-    if (n > TFTP_SIZE - 4) return -1;                                 
+    if (n > TFTP_SIZE - 4) return -1;                           
     uint16_t *packet = (uint16_t *) buffer;
     *packet = htons(DATA);
+    int i = sizeof(opcode);
     *(packet + 1) = htons(block);
-    memcpy(buffer + 4, data, n); // + 4 = entete du paquet.
-    *length = n + 4;
+    i += sizeof(uint16_t);
+    memcpy(buffer + i, data, n);
+    *length = n + i;
     return 0;
 }
 
@@ -43,15 +44,17 @@ int tftp_make_error(char *buffer, size_t *length, uint16_t error_code, const cha
 	if (buffer == NULL || message == NULL || length == NULL) return -1;                              
     uint16_t *packet = (uint16_t *) buffer;
     *packet = htons(ERROR);
+	int n = sizeof(opcode);
     *(packet + 1) = htons(error_code);
-    memcpy(buffer + 4, message, strlen(message)); // + 4 = entete du paquet.
-    int n = 4 + strlen(message);
+    n += sizeof(error_code);
+    strncpy(buffer + n, message, strlen(message));
+    n += strlen(message);
     *(buffer + n) = '\0';
     *length = n + 1;
     return 0;
 }
 
-opcode extract_type(char *buffer) {
+opcode extract_opcode(char *buffer) {
 	uint16_t *tmp = (uint16_t *) buffer;
 	opcode type = ntohs(*tmp);
 	return type;
@@ -64,7 +67,7 @@ int extract_blocknumber(char *buffer) {
 }
 
 char *extract_file(char *buffer) {
-	return buffer + 2;
+	return buffer + sizeof(opcode);
 }
 
 char *extract_mode(char *buffer, int size) {
@@ -78,11 +81,11 @@ errcode extract_errcode(char *buffer) {
 }
 
 char *extract_err_msg(char *buffer) {
-	return buffer + 4;
+	return buffer + (2 * sizeof(opcode));
 }
 
 char *extract_data(char *buffer) {
-	return buffer + 4;
+	return buffer + (2 * sizeof(opcode));
 }
 
 
@@ -97,7 +100,7 @@ void tftp_send_error(SocketUDP *socket, const AdresseInternet *dst, uint16_t cod
 
 int tftp_wait_RRQ(SocketUDP *socket, AdresseInternet *connexion, char *buffer, char *filename, size_t *filename_len) {
     recvFromSocketUDP(socket, buffer, TFTP_SIZE, connexion, TIMEOUT);
-    if (extract_type(buffer) == RRQ) {
+    if (extract_opcode(buffer) == RRQ) {
         char *tmp = strdup(buffer);
         strcpy(filename, extract_file(tmp));
         *filename_len = strlen(filename);
