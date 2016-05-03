@@ -14,7 +14,7 @@ LIBS =  libTFTP.a libSocketUDP.a libAdresseInternet.a
 
 # non standard, mais on peut définir une macro contenant tous les
 # exécutables du projet:
-#PRGS = test
+PRGS = server client test_socket_udp test_tftp_make
 
 # la première cible est celle qui sera exécutée par défaut si on
 # exécute "make" sans argument.
@@ -48,4 +48,4 @@ clean:
 	$(RM) -vf *~ *.o
 
 dist-clean:
-	$(RM) -vf *~ *.o *.so $(LIBS)
+	$(RM) -vf *~ *.o *.so $(LIBS) $(PRGS)
