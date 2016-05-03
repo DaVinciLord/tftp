@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include "server.h"
 #include "socketUDP.h"
 
@@ -20,6 +21,5 @@ int main(void) {
     char filename[255];
     tftp_wait_RRQ(sock, client_addr, buffer, filename, &filename_len); 
     printf("RRQ reçu, fichier demandé = %s , de taille nom de fichier = %d\n", filename, (int)filename_len);
-
-	free(sock);
+	closeSocketUDP(sock);
 }

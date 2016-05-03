@@ -45,7 +45,7 @@ libAdresseInternet.a: AdresseInternet.o
 	$(CC) -c $(CFLAGS) $< -o $@
 	
 clean:
-	$(RM) -vf *~ *.o
+	$(RM) -vf *~ *.o client server test_tftp_make test_socket_udp
 
 dist-clean:
 	$(RM) -vf *~ *.o *.so $(LIBS) $(PRGS)
