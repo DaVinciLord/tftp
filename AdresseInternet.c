@@ -124,3 +124,31 @@ int AdresseInternet_to_sockaddr (const AdresseInternet *adresse, struct sockaddr
     }
     return 0;
 }
+
+int AdresseInternet_compare (const AdresseInternet *adresse1, const AdresseInternet *adresse2) {
+    if(adresse1 == NULL || adresse2 == NULL) {
+        return -1;
+    }
+    if(adresse1->sockAddr.ss_family != adresse2->sockAddr.ss_family) {
+        return 0;
+    }
+    if(adresse1->sockAddr.ss_family == AF_INET) {
+        struct sockaddr_in* tmp1 = (struct sockaddr_in*)&adresse1->sockAddr;
+        struct sockaddr_in* tmp2 = (struct sockaddr_in*)&adresse2->sockAddr;
+        if(tmp1->sin_addr.s_addr == tmp2->sin_addr.s_addr && tmp1->sin_port == tmp2->sin_port) {
+            return 1;
+        }
+    } else if(adresse1->sockAddr.ss_family == AF_INET6) {
+        struct sockaddr_in6* tmp1 = (struct sockaddr_in6*)&adresse1->sockAddr;
+        struct sockaddr_in6* tmp2 = (struct sockaddr_in6*)&adresse2->sockAddr;
+        if(memcmp(&tmp1->sin6_addr, &tmp2->sin6_addr, sizeof(struct in6_addr)) && tmp1->sin6_port == tmp2->sin6_port) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int AdresseInternet_copy (AdresseInternet *adrdst, const AdresseInternet *adrsrc) {
+    memcpy(adrdst, adrsrc, sizeof(AdresseInternet));
+    return 0;
+}

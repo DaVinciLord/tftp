@@ -27,6 +27,7 @@ int AdresseInternet_getIP (const AdresseInternet *adresse, char *IP, int tailleI
 uint16_t AdresseInternet_getPort (const AdresseInternet *adresse);
 int sockaddr_to_AdresseInternet (const struct sockaddr *addr, AdresseInternet *adresse);
 int AdresseInternet_to_sockaddr (const AdresseInternet *adresse, struct sockaddr *addr);
-
+int AdresseInternet_compare (const AdresseInternet *adresse1, const AdresseInternet *adresse2);
+int AdresseInternet_copy (AdresseInternet *adrdst, const AdresseInternet *adrsrc);
 
 #endif // ADRESSEINTERNETTYPE_H_

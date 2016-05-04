@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Werror -Wextra -pedantic -std=c11 -D_XOPEN_SOURCE=700
+CFLAGS = -Wall -Werror -Wextra -pedantic -std=c11 -D_XOPEN_SOURCE=700 -pthread
 #CFLAGS = -D_XOPEN_SOURCE=700
 
 # définition des bibliothèques à utiliser lors de l'édition de lien de
@@ -9,7 +9,7 @@ CFLAGS = -Wall -Werror -Wextra -pedantic -std=c11 -D_XOPEN_SOURCE=700
 # de lien utilisera, en fonction des fichiers trouvés, soit: les
 # bibliothèques dynamiques (libAdresseInternet.so), statiques
 # (libAdresseInternet.a) ou les fichiers objets (AdresseInternet.o)
-LDLIBS = -lAdresseInternet -lSocketUDP -lTFTP
+LDLIBS = -lAdresseInternet -lSocketUDP -lTFTP -pthread
 LIBS =  libTFTP.a libSocketUDP.a libAdresseInternet.a
 
 # non standard, mais on peut définir une macro contenant tous les
@@ -24,7 +24,7 @@ client: client.c all
 	gcc $(CFLAGS) $< $(LIBS)  -o client
 	
 server: server.c all
-	gcc $(CFLAGS) $< $(LIBS)  -o server
+	gcc $(CFLAGS) $< $(LIBS) -o server
 	
 test_socket_udp: test_socket_udp.c all
 	gcc $(CFLAGS) $< $(LIBS)  -o test_socket_udp

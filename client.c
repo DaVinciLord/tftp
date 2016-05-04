@@ -7,26 +7,31 @@
 
 #include "tftp.h"
 #define TFTP_PORT 5555
-#define FILENAME "lenarraypourlesnuls.txt\0"
-#define IPSERVER "10.130.162.72"
+#define FILENAME "aa3d.tar\0"
+#define IPSERVER "10.130.162.73"
 
 int main(void) {
+    char nomfic[256];
+    fscanf(stdin, "%s", nomfic);
+
 	SocketUDP *sock = createSocketUDP();
     initSocketUDP(sock);
     AdresseInternet *server = AdresseInternet_new(IPSERVER, 6969);
     char reponse[TFTP_SIZE];
     size_t replength;
     int block = 0;
-    if (attacherSocketUDP(sock, NULL, TFTP_PORT, INADDR_LOOPBACK) != 0) {
+    if (attacherSocketUDP(sock, "0.0.0.0", 0, 0) != 0) {
         fprintf(stderr, "attacherSocketUDP");
         return EXIT_FAILURE;
     }
-    
-    if (tftp_send_RRQ_wait_DATA(sock, server, FILENAME, sock->addr, reponse, &replength) != 0) {
+    int err = tftp_send_RRQ_wait_DATA(sock, server, nomfic, sock->addr, reponse, &replength);
+    if (err  != 0) {
         fprintf(stderr, "erreur tftp_send_RRQ_wait_DATA\n");
+        printf("%s\n", err == -2 ? "FILE_NOT_FOUND" : "Erreur lors de l'envois des données");
         return EXIT_FAILURE;
     }
-    FILE *file = fopen("out.txt", "w");
+    
+    FILE *file = fopen("aa3d", "w");
     int transferFinished = 0;
     while (transferFinished == 0) {
         block = extract_blocknumber(reponse);
