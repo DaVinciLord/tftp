@@ -6,7 +6,7 @@ int tftp_make_ack(char *buffer, size_t *length, uint16_t block) {
 	uint16_t *packet = (uint16_t *) buffer;
 	*(packet) = htons(ACK);
 	*(packet + 1) = htons(block);
-    *length = (sizeof(uint16_t) + sizeof(block));
+    *length = 4;
     return 0;
 }
 
@@ -14,8 +14,8 @@ int tftp_make_rrq(char *buffer, size_t *length, const char *file) {
 	if (buffer == NULL || length == NULL || file == NULL) return -1;
 	uint16_t *packet = (uint16_t *) buffer;
 	*packet = htons(RRQ);
-	int n = sizeof(opcode);
-	strncpy(buffer + sizeof(opcode), file, strlen(file) + 1);
+	int n = 2;
+	strncpy(buffer + 2, file, strlen(file) + 1);
 	n +=  strlen(file) + 1;
 	strncpy(buffer + n, BINARY_TRANSFER, strlen(BINARY_TRANSFER) + 1);
 	n += strlen(BINARY_TRANSFER) + 1;
@@ -32,9 +32,9 @@ int tftp_make_data(char *buffer, size_t *length, uint16_t block, const char *dat
     if (n > TFTP_SIZE - 4) return -1;                           
     uint16_t *packet = (uint16_t *) buffer;
     *packet = htons(DATA);
-    int i = sizeof(opcode);
+    int i = 2;
     *(packet + 1) = htons(block);
-    i += sizeof(uint16_t);
+    i += 2;
     memcpy(buffer + i, data, n);
     *length = n + i;
     return 0;
@@ -44,9 +44,9 @@ int tftp_make_error(char *buffer, size_t *length, uint16_t error_code, const cha
 	if (buffer == NULL || message == NULL || length == NULL) return -1;                              
     uint16_t *packet = (uint16_t *) buffer;
     *packet = htons(ERROR);
-	int n = sizeof(opcode);
+	int n =2;
     *(packet + 1) = htons(error_code);
-    n += sizeof(error_code);
+    n += 2;
     strncpy(buffer + n, message, strlen(message));
     n += strlen(message);
     *(buffer + n) = '\0';
@@ -67,7 +67,7 @@ int extract_blocknumber(char *buffer) {
 }
 
 char *extract_file(char *buffer) {
-	return buffer + sizeof(opcode);
+	return buffer + 2;
 }
 
 char *extract_mode(char *buffer, int size) {
@@ -81,11 +81,11 @@ errcode extract_errcode(char *buffer) {
 }
 
 char *extract_err_msg(char *buffer) {
-	return buffer + (2 * sizeof(opcode));
+	return buffer + 4;
 }
 
 char *extract_data(char *buffer) {
-	return buffer + (2 * sizeof(opcode));
+	return buffer + 4;
 }
 
 

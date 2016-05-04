@@ -20,8 +20,8 @@ int main(void) {
     size_t filename_len;
     char filename[255];
     tftp_wait_RRQ(sock, client_addr, buffer, filename, &filename_len);
-         //printf("%s\n", extract_data(buffer));
+    printf("%s\n", extract_file(buffer));
 
-    tftp_send_DATA_wait_ACK(sock, client_addr, 0, extract_data(buffer), filename_len, sock->addr, buffer, TFTP_SIZE);
+    tftp_send_DATA_wait_ACK(sock, client_addr, 1, extract_file(buffer), filename_len + 1, sock->addr, buffer, TFTP_SIZE);
 	closeSocketUDP(sock);
 }
