@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <sys/types.h>
 
+#include "options.h"
 #include "socketUDP.h"
 
 #define TFTP_SIZE 512
@@ -15,7 +16,7 @@
 #define BINARY_TRANSFER "octet"
 
 enum {
-    RRQ = 1, WRQ = 2, DATA = 3,ACK = 4, ERROR = 5
+    RRQ = 1, WRQ = 2, DATA = 3,ACK = 4, ERROR = 5, OACK = 6
 };
 typedef uint16_t opcode;
 
@@ -29,6 +30,9 @@ int tftp_make_ack(char *buffer, size_t *length, uint16_t block);
 int tftp_make_rrq(char *buffer, size_t *length, const char *file);
 int tftp_make_data(char *buffer, size_t *length, uint16_t block, const char *data, size_t n);
 int tftp_make_error(char *buffer, size_t *length, uint16_t error_code, const char *message);
+int write_options(char *buffer, const char *option, int value);
+int tftp_make_rrq_opt(char *buffer, size_t *length, const char *fichier, size_t noctets, size_t nblocs);
+int tftp_make_oack(char *buffer, size_t *length, size_t noctets, size_t nblocs);
 void tftp_send_error(SocketUDP *socket, const AdresseInternet *dst, uint16_t code, const char *msg);
 int tftp_send_RRQ_wait_DATA_with_timeout(SocketUDP *socket, const AdresseInternet *dst, const char *fichier, AdresseInternet *connexion, char *reponse, size_t *replength);
 int tftp_send_RRQ_wait_DATA(SocketUDP *socket, const AdresseInternet *dst, const char *file, AdresseInternet *connexion, char *response, size_t *replength);
@@ -36,6 +40,13 @@ int tftp_send_DATA_wait_ACK(SocketUDP *socket, const AdresseInternet *dst, uint1
 int tftp_send_ACK_wait_DATA(SocketUDP *socket, const AdresseInternet *dst, uint16_t block, AdresseInternet *connexion, char *response, size_t *replength);
 int tftp_send_last_ACK(SocketUDP *socket, const AdresseInternet *dst, uint16_t block);
 int tftp_wait_RRQ(SocketUDP *socket, AdresseInternet *connexion, char *buffer, char *filename, size_t *filename_len);
+int tftp_send_ACK(SocketUDP *socket, const AdresseInternet *dst, uint16_t block);
+int tftp_wait_DATA(SocketUDP *socket, AdresseInternet *connexion, char *response, size_t *replength);
+int tftp_send_RRQ_wait_OACK_with_timeout(SocketUDP *socket, const AdresseInternet *dst, const char *filename, AdresseInternet *connexion, char *response, size_t *replength, size_t noctets, size_t nblocs);
+int tftp_send_RRQ_wait_OACK(SocketUDP *socket, const AdresseInternet *dst, const char *filename, AdresseInternet *connexion, char *response, size_t *replength, size_t noctets, size_t nblocs);
+int tftp_wait_ACK(SocketUDP *socket, const AdresseInternet *dst, uint16_t *block);
+int tftp_send_DATA(SocketUDP *socket, const AdresseInternet *dst, const char *paquet, size_t paquetlen);
+int tftp_send_OACK(SocketUDP *socket, const AdresseInternet *dst, const char *buffer);
 opcode extract_opcode(char *buffer);
 int extract_blocknumber(char *buffer);
 char *extract_file(char *buffer);
@@ -43,5 +54,6 @@ char *extract_mode(char *buffer, int size);
 errcode extract_errcode(char *buffer);
 char *extract_err_msg(char *buffer);
 char *extract_data(char *buffer);
+int extract_rrq_opt(options *opts, char *buffer);
 
 #endif // TFTP_H_
