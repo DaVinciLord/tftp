@@ -33,9 +33,10 @@ int main(void) {
         do {
             data = fread(packet, 1, 508, file);
             tftp_make_data(buffer, &length, num_block, packet, data);
-            num_block++;
+            tftp_send_DATA_wait_ACK(sock, client_addr, num_block, buffer, filename_len, sock->addr, buffer, TFTP_SIZE);            
             printf("%d    %s\n", extract_blocknumber(buffer), extract_data(buffer));
             memset(buffer, 0, sizeof(buffer));
+            num_block++;
         } while(length >= TFTP_SIZE); 
     } else {
        // tftp_send_error(sock_client, client_addr, NOT_FOUND, "Le fichier n'existe pas.");

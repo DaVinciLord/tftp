@@ -82,7 +82,7 @@ uint16_t getLocalPort (const SocketUDP *socket) {
     return AdresseInternet_getPort(socket->addr);
 }
 
-int writeToSocketUDP(SocketUDP *socket, const AdresseInternet *dst, char *buffer, size_t length) {
+int writeToSocketUDP(SocketUDP *socket, const AdresseInternet *dst, const char *buffer, size_t length) {
 	if(socket == NULL || dst == NULL || buffer == NULL) {
         return -1;
     }
