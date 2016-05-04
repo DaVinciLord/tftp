@@ -16,10 +16,11 @@ int main(void) {
     char reponse[TFTP_SIZE];
     size_t replength;
     int block = 0;
-    if (attacherSocketUDP(sock, NULL, TFTP_PORT, INADDR_LOOPBACK) != 0) {
+    if (attacherSocketUDP(sock, NULL, 0, INADDR_LOOPBACK) != 0) {
         fprintf(stderr, "attacherSocketUDP");
         return EXIT_FAILURE;
     }
+    printf("%d\n", getLocalPort(sock));
 
     if (tftp_send_RRQ_wait_DATA(sock, server, FILENAME, sock->addr, reponse, &replength) != 0) {
         fprintf(stderr, "erreur tftp_send_RRQ_wait_DATA\n");
