@@ -1,7 +1,16 @@
 #include "tftp.h"
 #include "options.h"
 #include "socketUDP.h"
+/**
+ * 
+ * Projet TFTP
+ * Metton Vincent
+ * Pommier Grégoire
+ * 
+ * 
+ * */
 
+//Créér un paquet ack
 int tftp_make_ack(char *buffer, size_t *length, uint16_t block) {
 	if (buffer == NULL || length == NULL) return -1;
 	uint16_t *packet = (uint16_t *) buffer;
@@ -11,6 +20,7 @@ int tftp_make_ack(char *buffer, size_t *length, uint16_t block) {
     return 0;
 }
 
+//Créér un paquet rrq
 int tftp_make_rrq(char *buffer, size_t *length, const char *file) {
 	if (buffer == NULL || length == NULL || file == NULL) return -1;
 	uint16_t *packet = (uint16_t *) buffer;
@@ -24,7 +34,6 @@ int tftp_make_rrq(char *buffer, size_t *length, const char *file) {
 	*length = n;
     return 0;
 }
-
 
 int tftp_make_data(char *buffer, size_t *length, uint16_t block, const char *data, size_t n) {
 	//buffer deja alloué;
@@ -89,12 +98,14 @@ int tftp_make_oack(char *buffer, size_t *length, size_t noctets, size_t nblocs) 
     return 0;
 }
 
+//On recupere le type du paquet
 opcode extract_opcode(char *buffer) {
 	uint16_t *tmp = (uint16_t *) buffer;
 	opcode type = ntohs(*tmp);
 	return type;
 }
 
+//On recupere le numero de bloc
 int extract_blocknumber(char *buffer) {
 	uint16_t *tmp = (uint16_t *) buffer;
 	uint16_t block = ntohs(*(tmp + 1));
@@ -139,6 +150,7 @@ int extract_rrq_opt(options *opts, char *buffer) {
     return 1;
 }
 
+//On envois un paquet d'erreur
 void tftp_send_error(SocketUDP *socket, const AdresseInternet *dst, uint16_t code, const char *msg) {
 	if(socket != NULL && dst != NULL && msg != NULL) {
         char buffer[TFTP_SIZE];
@@ -148,6 +160,7 @@ void tftp_send_error(SocketUDP *socket, const AdresseInternet *dst, uint16_t cod
     }
 }
 
+//On attends un paquet de RRQ
 int tftp_wait_RRQ(SocketUDP *socket, AdresseInternet *connexion, char *buffer, char *filename, size_t *filename_len) {
     recvFromSocketUDP(socket, buffer, TFTP_SIZE, connexion, TIMEOUT);
     if (extract_opcode(buffer) == RRQ) {

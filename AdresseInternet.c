@@ -4,6 +4,16 @@
 
 #include "AdresseInternetType.h"
 
+/**
+ * 
+ * Projet TFTP
+ * Metton Vincent
+ * Pommier Grégoire
+ * 
+ * 
+ * */
+ 
+//On créé un structure
 AdresseInternet *AdresseInternet_new (const char* adresse, uint16_t port) {
     /*Allocation mémoire pour la structure */
     AdresseInternet *addr = (AdresseInternet*)malloc(sizeof(*addr));
@@ -32,6 +42,7 @@ AdresseInternet *AdresseInternet_new (const char* adresse, uint16_t port) {
     return addr;
 }
 
+
 AdresseInternet *AdresseInternet_any (uint16_t port) {
     return AdresseInternet_new("0.0.0.0", port);
 }
@@ -40,14 +51,16 @@ AdresseInternet *AdresseInternet_loopback (uint16_t port) {
     return AdresseInternet_new("127.0.0.1", port);
 }
 
+//On détruit proprement la structure
 void AdresseInternet_free (AdresseInternet *adresse) {
     if(adresse != NULL) {
         free(adresse);
     }
 }
 
+//On récupère les informations
 int AdresseInternet_getinfo (AdresseInternet *adresse, char *nomDNS, int tailleDNS, char *nomPort, int taillePort) {
-    if(adresse == NULL || (nomDNS == NULL && nomPort == NULL)) {
+    if(adiresse == NULL || (nomDNS == NULL && nomPort == NULL)) {
         return -1;
     }
     if(nomDNS != NULL) {
@@ -67,6 +80,7 @@ int AdresseInternet_getinfo (AdresseInternet *adresse, char *nomDNS, int tailleD
     return 0;
 }
 
+//l'ip
 int AdresseInternet_getIP (const AdresseInternet *adresse, char *IP, int tailleIP) {
     if(adresse == NULL) {
         return -1;
@@ -85,6 +99,7 @@ int AdresseInternet_getIP (const AdresseInternet *adresse, char *IP, int tailleI
     return 0;
 }
 
+//le port
 uint16_t AdresseInternet_getPort (const AdresseInternet *adresse) {
     if(adresse == NULL) {
         return -1;
@@ -94,7 +109,7 @@ uint16_t AdresseInternet_getPort (const AdresseInternet *adresse) {
     return port;
 }
 
-
+//On convertie un sockaddr en AdresseInternet
 int sockaddr_to_AdresseInternet (const struct sockaddr *addr, AdresseInternet *adresse) {
     if(addr == NULL || adresse == NULL ) {
         return -1;
@@ -113,6 +128,7 @@ int sockaddr_to_AdresseInternet (const struct sockaddr *addr, AdresseInternet *a
     return 0;
 }
 
+//L'inverse
 int AdresseInternet_to_sockaddr (const AdresseInternet *adresse, struct sockaddr *addr) {
     if(adresse == NULL || addr == NULL) {
         return -1;
@@ -125,6 +141,7 @@ int AdresseInternet_to_sockaddr (const AdresseInternet *adresse, struct sockaddr
     return 0;
 }
 
+//Compare deux adresses
 int AdresseInternet_compare (const AdresseInternet *adresse1, const AdresseInternet *adresse2) {
     if(adresse1 == NULL || adresse2 == NULL) {
         return -1;
@@ -148,6 +165,7 @@ int AdresseInternet_compare (const AdresseInternet *adresse1, const AdresseInter
     return 0;
 }
 
+//Copie deux adresses
 int AdresseInternet_copy (AdresseInternet *adrdst, const AdresseInternet *adrsrc) {
     memcpy(adrdst, adrsrc, sizeof(AdresseInternet));
     return 0;

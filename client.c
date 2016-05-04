@@ -1,12 +1,19 @@
 #include "client.h"
 
-
+/**
+ * 
+ * Projet TFTP
+ * Metton Vincent
+ * Pommier Grégoire
+ * 
+ * 
+ * */
 
 
 
 int main(void) {
    
-	//On initialise les variables qui seront entée
+	//On initialise les variables qui seront entrées par l'utilisateur
     char nomfic[256];
     size_t blk_size = TFTP_SIZE;
     size_t window_size = 1;
@@ -28,7 +35,7 @@ int main(void) {
         printf("\n");
     }   
     
-    //On crée ma socket
+    //On créé la socket
 	SocketUDP *sock = createSocketUDP();
     initSocketUDP(sock);
     //On défini l'adresse du serveur
@@ -43,7 +50,7 @@ int main(void) {
         return EXIT_FAILURE;
     }
     
-    // Selon si des options ont été demandée on chosi ce que l'on envois
+    // Selon si des options ont été demandées on choisi ce que l'on envoit
     if (blk_size == TFTP_SIZE &&  window_size == 1) {
 		char reponse[TFTP_SIZE];
         trivial_tftp(block, replength, reponse, server, blk_size, sock, nomfic);
@@ -59,7 +66,7 @@ int main(void) {
 
 //C'est la fonction classique, qui ne gère pas les options windowsize et blocksize
 int trivial_tftp(int block, size_t replength, char *reponse, AdresseInternet *server, size_t blk_size, SocketUDP *sock, char *nomfic) {
-    //On envois la requete 
+    //On envoit la requete 
     int err = tftp_send_RRQ_wait_DATA(sock, server, nomfic, sock->addr, reponse, &replength);
     if (err  != 0) {
         fprintf(stderr, "erreur tftp_send_RRQ_wait_DATA\n");

@@ -26,11 +26,7 @@ client: client.c all
 server: server.c all
 	gcc $(CFLAGS) $< $(LIBS) -o server
 	
-test_socket_udp: test_socket_udp.c all
-	gcc $(CFLAGS) $< $(LIBS)  -o test_socket_udp
-	
-test_tftp_make: test_tftp_make.c all
-	gcc $(CFLAGS) $< $(LIBS)  -o test_tftp_make
+
 
 libTFTP.a: tftp.o
 	ar r $@ $<
@@ -45,7 +41,7 @@ libAdresseInternet.a: AdresseInternet.o
 	$(CC) -c $(CFLAGS) $< -o $@
 	
 clean:
-	$(RM) -vf *~ *.o client server test_tftp_make test_socket_udp
+	$(RM) -vf *~ *.o client server
 
 dist-clean:
 	$(RM) -vf *~ *.o *.so $(LIBS) $(PRGS)

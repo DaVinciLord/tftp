@@ -10,11 +10,20 @@
 #include "tftp.h"
 #define TFTP_PORT 6969
 
+/**
+ * 
+ * Projet TFTP
+ * Metton Vincent
+ * Pommier Grégoire
+ * 
+ * 
+ * */
 
 int main(void) {
-	 
+	//On créé la socket
 	SocketUDP *sock = createSocketUDP();
     initSocketUDP(sock);
+    //On la bind
     attacherSocketUDP(sock, NULL, TFTP_PORT, 0);
     AdresseInternet *client_addr =(AdresseInternet *)malloc(sizeof(AdresseInternet));
     char buffer[TFTP_SIZE];
@@ -22,21 +31,23 @@ int main(void) {
     char filename[256];
         
 	while(1) {
+	
 		if(tftp_wait_RRQ(sock, client_addr, buffer, filename, &filename_len) != -1) {
 			
 			
 			// Lancement du thread
 			int errnum = 0;
-			
+			//On regarde si des options ont été données en requete
 			options *opts = (options *)malloc(sizeof(options));
 			opts->windowsize = DEFAULT_WINDOWSIZE;
 			opts->blksize = DEFAULT_BLKSIZE;
 			pthread_t th;
 			
+			//Selon si il y a des options, en execute une routine différente
 			if(extract_rrq_opt(opts, buffer) == 0) {
 				thread_args_1 *arg = malloc(sizeof(*arg));
 				memset(arg, 0, sizeof(*arg));
-
+				//On créé les arguments du thread
 				if(arg == NULL) {
 					fprintf(stderr, "malloc()");
 					exit(EXIT_FAILURE);
@@ -45,12 +56,13 @@ int main(void) {
 				strncpy(arg->filename, filename, filename_len);
 				arg->client_addr = (AdresseInternet *)malloc(sizeof(AdresseInternet));
 				AdresseInternet_copy(arg->client_addr, client_addr);
-
+				//On lance le thread
 				if((errnum = pthread_create(&th, NULL, (start_routine_type) run1, arg)) != 0) {
 					fprintf(stderr, "pthread_create(): %s\n", strerror(errnum));
 					exit(EXIT_FAILURE);
 				}
 			} else {
+				//De meme mais avec la seconde routine
 				thread_args_2 *arg = malloc(sizeof(*arg));
 				memset(arg, 0, sizeof(*arg));
 
@@ -64,22 +76,22 @@ int main(void) {
 				AdresseInternet_copy(arg->client_addr, client_addr);
 				arg->opts = (options *)malloc(sizeof(options));
 				memcpy(arg->opts, opts, sizeof(options));
+				//On lance le thread
 				if((errnum = pthread_create(&th, NULL, (start_routine_type) run2, arg)) != 0) {
 					fprintf(stderr, "pthread_create(): %s\n", strerror(errnum));
 					exit(EXIT_FAILURE);
 				}
 			}
 			
-			
+			//On nettoie le buffer
 			memset(buffer, 0, sizeof(buffer));
 			memset(client_addr, 0, sizeof(*client_addr));
 			memset(filename, 0, sizeof(filename));
 		}  else {
+			//Ce message s'affiche quand le serveur timeout
 			printf("FRAME_DROP\n");
 		}
 	}
-
-    printf("RRQ reçu, fichier demandé = %s , de taille nom de fichier = %d\n", filename, (int)filename_len);
 
 	closeSocketUDP(sock);
 	
@@ -97,16 +109,19 @@ void *run1(thread_args_1 *arg) {
 	
 	SocketUDP *socket = createSocketUDP();
     initSocketUDP(socket);
-    
+    //On ouvre le fichier que l'on veux lire
 	FILE* file = fopen(arg->filename, "r");
 	if(file != NULL) {
 		size_t data = 0;
 		int num_block = 1;
 		char packet	[TFTP_SIZE - 4];
 		do {
+			//On le lit un peu
 			data = fread(packet, 1, 508, file);
 			tftp_make_data(buffer, &length, num_block, packet, data);
+			//On envois un paquet
 			tftp_send_DATA_wait_ACK(socket, arg->client_addr, num_block, buffer, length);            
+			//On nettoie le Buffer
 			memset(buffer, 0, sizeof(buffer));
 			num_block++;
 		} while(length >= TFTP_SIZE); 
@@ -119,7 +134,11 @@ void *run1(thread_args_1 *arg) {
 	
 	return NULL;
 }
-
+/* Dans ce run, on va envoyer windowsize paquets, 
+ * puis attendre un ack, puis on recommence a partir
+ * du numéro du block reçu
+ * 
+ *  */
 void *run2(thread_args_2 *arg) {
 	if (arg == NULL) {
 		fprintf(stderr, "Unexpected argument value\n");

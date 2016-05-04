@@ -13,12 +13,22 @@
 #include "socketUDP.h"
 #include "AdresseInternetType.h"
 
+/**
+ * 
+ * Projet TFTP
+ * Metton Vincent
+ * Pommier Grégoire
+ * 
+ * 
+ * */
+//On créé une socket
 SocketUDP *createSocketUDP() {
     SocketUDP *socket = (SocketUDP *)malloc(sizeof(SocketUDP));
     memset(socket, 0, sizeof(*socket));
     return socket;
 }
 
+//On initialise psocket
 int initSocketUDP(SocketUDP *psocket) {
 	psocket->sockfd = socket(PF_INET, SOCK_DGRAM, 0);
 	if(psocket->sockfd == -1) {
@@ -28,6 +38,7 @@ int initSocketUDP(SocketUDP *psocket) {
 	return 0;
 }
 
+//On bind
 int attacherSocketUDP(SocketUDP *sock, const char *address, uint16_t port, int flags) {
 
 	if (address == NULL) {
@@ -53,10 +64,12 @@ int attacherSocketUDP(SocketUDP *sock, const char *address, uint16_t port, int f
 	return 0;
 }
 
+//Renvois si la socket est attachée
 int estAttachee(SocketUDP *socket) {
 	return (socket->is_bound == 1) ? 0 : -1 ;
 }
 
+//Renvois le nom local de la socket
 int getLocalName(SocketUDP *socket, char *buffer, int taille) {
     if(socket == NULL || socket->addr == NULL || buffer == NULL) {
         return -1;
@@ -66,6 +79,7 @@ int getLocalName(SocketUDP *socket, char *buffer, int taille) {
     return n;
 }
 
+//Renvois l'ip locale
 int getLocalIP(const SocketUDP *socket, char *localIP, int tailleIP) {
     if(socket == NULL || socket->addr == NULL || localIP == NULL) {
         return -1;
@@ -75,6 +89,7 @@ int getLocalIP(const SocketUDP *socket, char *localIP, int tailleIP) {
     return n;
 }
 
+//Renvois local Port
 uint16_t getLocalPort (const SocketUDP *socket) {
     if(socket == NULL || socket->addr == NULL) {
         return -1;
@@ -82,6 +97,7 @@ uint16_t getLocalPort (const SocketUDP *socket) {
     return AdresseInternet_getPort(socket->addr);
 }
 
+//permet d'ecrire a travers la socket, à l'adreese dst
 int writeToSocketUDP(SocketUDP *socket, const AdresseInternet *dst, const char *buffer, size_t length) {
 	if(socket == NULL || dst == NULL || buffer == NULL) {
         return -1;
@@ -91,6 +107,7 @@ int writeToSocketUDP(SocketUDP *socket, const AdresseInternet *dst, const char *
     return sendto(socket->sockfd, buffer, (size_t)length, 0, &sockAddr, sizeof(sockAddr));
 }
 
+//Permet de recevoir depuis la socket
 int recvFromSocketUDP(SocketUDP *socket, char *response, size_t replength, AdresseInternet *connexion, int timeout) {
     if(socket == NULL || connexion == NULL || response == NULL) {
         return -1;
@@ -125,6 +142,7 @@ int recvFromSocketUDP(SocketUDP *socket, char *response, size_t replength, Adres
     return size;
 }
 
+//Ferme la socket
 int closeSocketUDP(SocketUDP *socket) {
     if(socket == NULL || socket->addr == NULL) {
         return -1;
