@@ -99,8 +99,7 @@ void tftp_send_error(SocketUDP *socket, const AdresseInternet *dst, uint16_t cod
 }
 
 int tftp_wait_RRQ(SocketUDP *socket, AdresseInternet *connexion, char *buffer, char *filename, size_t *filename_len) {
-    int n = recvFromSocketUDP(socket, buffer, TFTP_SIZE, connexion, TIMEOUT);
-    printf("%d", (int) n);
+    recvFromSocketUDP(socket, buffer, TFTP_SIZE, connexion, TIMEOUT);
     if (extract_opcode(buffer) == RRQ) {
         strcpy(filename, extract_file(buffer));
         *filename_len = strlen(filename);
@@ -108,6 +107,7 @@ int tftp_wait_RRQ(SocketUDP *socket, AdresseInternet *connexion, char *buffer, c
     }
     return -1;
 }
+
 
 
 int tftp_send_RRQ_wait_DATA_with_timeout(SocketUDP *socket, const AdresseInternet *dst, const char *file, AdresseInternet *connexion, char *response, size_t *replength) {
@@ -123,7 +123,6 @@ int tftp_send_RRQ_wait_DATA_with_timeout(SocketUDP *socket, const AdresseInterne
     if (n < 0) return -1;
     if (n != 0) { 
 		opcode r = extract_opcode(response);
-		printf("%d %s \n", (int) r, extract_err_msg(response));
 		if(r != DATA) {
 			tftp_send_error(socket, dst, ERROR, "C'est pas légal!\n");
 			return -1;
@@ -136,7 +135,6 @@ int tftp_send_RRQ_wait_DATA_with_timeout(SocketUDP *socket, const AdresseInterne
 
 int tftp_send_RRQ_wait_DATA(SocketUDP *socket, const AdresseInternet *dst, const char *file, AdresseInternet *connexion, char *response, size_t *replength) {
 	for (int i = 0; i < NB_MAX_ENVOI; i++) {
-		printf("1 envois \n");
 		if (tftp_send_RRQ_wait_DATA_with_timeout(socket, dst, file, connexion, response, replength) != -1) {
             return 0;
         }
