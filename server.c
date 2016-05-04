@@ -31,7 +31,7 @@ int main(void) {
         int num_block = 1;
         char packet	[TFTP_SIZE - 4];
         do {
-            data = fread(packet, 1, sizeof(packet), file);
+            data = fread(packet, 1, 508, file);
             tftp_make_data(buffer, &length, num_block, packet, data);
             num_block++;
             printf("%d    %s\n", extract_blocknumber(buffer), extract_data(buffer));
