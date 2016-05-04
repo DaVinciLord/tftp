@@ -8,11 +8,12 @@
 #include "tftp.h"
 #define TFTP_PORT 5555
 #define FILENAME "lenarraypourlesnuls.txt\0"
+#define IPSERVER "10.130.162.72"
 
 int main(void) {
 	SocketUDP *sock = createSocketUDP();
     initSocketUDP(sock);
-    AdresseInternet *server = AdresseInternet_loopback(6969);
+    AdresseInternet *server = AdresseInternet_new(IPSERVER, 6969);
     char reponse[TFTP_SIZE];
     size_t replength;
     int block = 0;
