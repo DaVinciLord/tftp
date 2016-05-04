@@ -120,16 +120,17 @@ int tftp_send_RRQ_wait_DATA_with_timeout(SocketUDP *socket, const AdresseInterne
         return -1;
     }
     int n  = recvFromSocketUDP(socket, response, TFTP_SIZE, connexion, TIMEOUT);
+    printf("%d\n", n);
     if (n < 0) return -1;
     if (n != 0) { 
-		opcode r = extract_opcode(response);
+		opcode r = extract_opcode(response);    
+        *replength = n;
 		if(r != DATA) {
 			tftp_send_error(socket, dst, ERROR, "C'est pas légal!\n");
 			return -1;
 		}
 		return 0;
 	}
-    *replength = n;
     return -1;
 }
 

@@ -33,7 +33,7 @@ int main(void) {
         do {
             data = fread(packet, 1, 508, file);
             tftp_make_data(buffer, &length, num_block, packet, data);
-            tftp_send_DATA_wait_ACK(sock, client_addr, num_block, buffer, filename_len, sock->addr, buffer, TFTP_SIZE);            
+            tftp_send_DATA_wait_ACK(sock, client_addr, num_block, buffer, length, sock->addr, buffer, TFTP_SIZE);            
             printf("%d    %s\n", extract_blocknumber(buffer), extract_data(buffer));
             memset(buffer, 0, sizeof(buffer));
             num_block++;
