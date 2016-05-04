@@ -120,7 +120,6 @@ int tftp_send_RRQ_wait_DATA_with_timeout(SocketUDP *socket, const AdresseInterne
         return -1;
     }
     int n  = recvFromSocketUDP(socket, response, TFTP_SIZE, connexion, TIMEOUT);
-    printf("%d\n", n);
     if (n < 0) return -1;
     if (n != 0) { 
 		opcode r = extract_opcode(response);    
@@ -143,26 +142,26 @@ int tftp_send_RRQ_wait_DATA(SocketUDP *socket, const AdresseInternet *dst, const
 	return -1;
 }
 
-int tftp_send_DATA_wait_ACK(SocketUDP *socket, const AdresseInternet *dst, uint16_t block, const char *paquet, size_t paquetlen, AdresseInternet *connexion, char *response, size_t replength) {
+int tftp_send_DATA_wait_ACK(SocketUDP *socket, const AdresseInternet *dst, uint16_t block, const char *paquet, size_t paquetlen) {
 	if (socket == NULL || dst == NULL || paquet == NULL) return -1;
-
+    char response[TFTP_SIZE];
     do {
         if (writeToSocketUDP(socket, dst, paquet, paquetlen) < 0) {
             return -1;
         }
-        int n = recvFromSocketUDP(socket, response, replength, connexion, TIMEOUT);
+        int n = recvFromSocketUDP(socket, response, TFTP_SIZE, NULL, TIMEOUT);
         if (n < 0) return -1;
         opcode r = extract_opcode(response);
         if(r != ACK) {
-            tftp_send_error(socket, connexion, 4, "");
+            tftp_send_error(socket, dst, 4, "");
         }
-    }while (extract_blocknumber(response) != block);
+    } while (extract_blocknumber(response) != block);
     return 0;
     
     
 }
 
-int tftp_send_ACK_wait_DATA(SocketUDP *socket, const AdresseInternet *dst, uint16_t block, AdresseInternet *connexion, char *response, size_t replength) {
+int tftp_send_ACK_wait_DATA(SocketUDP *socket, const AdresseInternet *dst, uint16_t block, AdresseInternet *connexion, char *response, size_t *replength) {
 	if (socket == NULL || dst == NULL) return -1;
     char buffer[TFTP_SIZE]; // 512 pour TFPT_SIZE
     size_t length;
@@ -172,12 +171,13 @@ int tftp_send_ACK_wait_DATA(SocketUDP *socket, const AdresseInternet *dst, uint1
     if (writeToSocketUDP(socket, dst, buffer, TFTP_SIZE) < 0) {
         return -1;
     }
-    int n = recvFromSocketUDP(socket, response, replength, connexion, TIMEOUT);
+    int n = recvFromSocketUDP(socket, response, TFTP_SIZE, connexion, TIMEOUT);
     if (n < 0) return -1;
     opcode r = extract_opcode(response);
     if(r != DATA) {
-        tftp_send_error(socket, connexion, 4, "");
+        tftp_send_error(socket, dst, 4, "");
     }
+    *replength = n;
     return 0;
 }
 

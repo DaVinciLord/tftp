@@ -32,8 +32,8 @@ int tftp_make_error(char *buffer, size_t *length, uint16_t error_code, const cha
 void tftp_send_error(SocketUDP *socket, const AdresseInternet *dst, uint16_t code, const char *msg);
 int tftp_send_RRQ_wait_DATA_with_timeout(SocketUDP *socket, const AdresseInternet *dst, const char *fichier, AdresseInternet *connexion, char *reponse, size_t *replength);
 int tftp_send_RRQ_wait_DATA(SocketUDP *socket, const AdresseInternet *dst, const char *file, AdresseInternet *connexion, char *response, size_t *replength);
-int tftp_send_DATA_wait_ACK(SocketUDP *socket, const AdresseInternet *dst, uint16_t block, const char *paquet, size_t paquetlen, AdresseInternet *connexion, char *response, size_t replength);
-int tftp_send_ACK_wait_DATA(SocketUDP *socket, const AdresseInternet *dst, uint16_t block, AdresseInternet *connexion, char *response, size_t replength);
+int tftp_send_DATA_wait_ACK(SocketUDP *socket, const AdresseInternet *dst, uint16_t block, const char *paquet, size_t paquetlen);
+int tftp_send_ACK_wait_DATA(SocketUDP *socket, const AdresseInternet *dst, uint16_t block, AdresseInternet *connexion, char *response, size_t *replength);
 int tftp_send_last_ACK(SocketUDP *socket, const AdresseInternet *dst, uint16_t block);
 int tftp_wait_RRQ(SocketUDP *socket, AdresseInternet *connexion, char *buffer, char *filename, size_t *filename_len);
 opcode extract_opcode(char *buffer);

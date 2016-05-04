@@ -25,29 +25,29 @@ int main(void) {
         fprintf(stderr, "erreur tftp_send_RRQ_wait_DATA\n");
         return EXIT_FAILURE;
     }
-    printf("%d\n", (int) replength);
     FILE *file = fopen("out.txt", "w");
     int transferFinished = 0;
-    while (!transferFinished) {
+    while (transferFinished == 0) {
         block = extract_blocknumber(reponse);
         opcode code = extract_opcode(reponse);
 
         // Réception des données du fichier récupéré
         if(code == DATA) {
+            printf("DATA n° %d\n", extract_blocknumber(reponse));
+            printf("%d\n", (int)replength);
             fwrite(extract_data(reponse), replength-4, 1, file);
             if (replength < TFTP_SIZE) {
                 tftp_send_last_ACK(sock, server , block);
+                printf("Transfert terminé\n");
                 transferFinished = 1;
             } else {
                 memset(reponse, 0, sizeof(reponse));
-                tftp_send_ACK_wait_DATA(sock, sock->addr, block, server, reponse, replength);
+                tftp_send_ACK_wait_DATA(sock, sock->addr, block, server, reponse, &replength);
             }
         }
     }
 
-    printf("%s\n", extract_data(reponse));
-
-	tftp_send_last_ACK(sock, server, block);
+    
     close(sock->sockfd);
     AdresseInternet_free(server);
 	free(sock);
