@@ -6,9 +6,8 @@
 #include <unistd.h>
 
 #include "tftp.h"
-#define TFTP_PORT 5555
 #define FILENAME "aa3d.tar\0"
-#define IPSERVER "10.130.162.73"
+#define IPSERVER "10.130.162.72"
 
 int main(void) {
     char nomfic[256];
@@ -39,8 +38,6 @@ int main(void) {
 
         // Réception des données du fichier récupéré
         if(code == DATA) {
-            printf("DATA n° %d\n", extract_blocknumber(reponse));
-            printf("%d\n", (int)replength);
             fwrite(extract_data(reponse), replength-4, 1, file);
             if (replength < TFTP_SIZE) {
                 tftp_send_last_ACK(sock, server , block);
@@ -54,7 +51,7 @@ int main(void) {
     }
 
     
-    close(sock->sockfd);
-    AdresseInternet_free(server);
-	free(sock);
+    closeSocketUDP(sock);
+    
+    return EXIT_SUCCESS;
 }

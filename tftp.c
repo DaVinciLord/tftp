@@ -149,16 +149,16 @@ int tftp_send_DATA_wait_ACK(SocketUDP *socket, const AdresseInternet *dst, uint1
         if (writeToSocketUDP(socket, dst, paquet, paquetlen) < 0) {
             return -1;
         }
-        int n = recvFromSocketUDP(socket, response, TFTP_SIZE, NULL, TIMEOUT);
+        AdresseInternet add_tmp;
+        memset(&add_tmp, 0, sizeof(add_tmp));
+        int n = recvFromSocketUDP(socket, response, TFTP_SIZE, &add_tmp, TIMEOUT);
         if (n < 0) return -1;
         opcode r = extract_opcode(response);
         if(r != ACK) {
             tftp_send_error(socket, dst, 4, "");
         }
     } while (extract_blocknumber(response) != block);
-    return 0;
-    
-    
+    return 0; 
 }
 
 int tftp_send_ACK_wait_DATA(SocketUDP *socket, const AdresseInternet *dst, uint16_t block, AdresseInternet *connexion, char *response, size_t *replength) {

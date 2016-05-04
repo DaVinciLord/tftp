@@ -20,7 +20,7 @@ SocketUDP *createSocketUDP() {
 }
 
 int initSocketUDP(SocketUDP *psocket) {
-	psocket->sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+	psocket->sockfd = socket(PF_INET, SOCK_DGRAM, 0);
 	if(psocket->sockfd == -1) {
 		return -1;
 	}
