@@ -39,7 +39,7 @@ int tftp_make_data(char *buffer, size_t *length, uint16_t block, const char *dat
 	//buffer deja alloué;
     if (buffer == NULL || data == NULL || length == NULL) return -1;
     // Taille du fichier indiquant qu'on envoie le dernier paquet.
-    if (n > TFTP_SIZE - 4) return -1;                           
+  //  if (n > TFTP_SIZE - 4) return -1;                           
     uint16_t *packet = (uint16_t *) buffer;
     *packet = htons(DATA);
     int i = 2;
@@ -67,7 +67,7 @@ int tftp_make_error(char *buffer, size_t *length, uint16_t error_code, const cha
 int write_options(char *buffer, const char *option, int value) {
 	strncpy(buffer, option, strlen(option) + 1);
     int n = strlen(option) + 1;
-    n += snprintf((buffer + n), sizeof(value), "%d", value);
+    n += snprintf((buffer + n), strlen("65535"), "%d", value);
     *(buffer + n) = '\0';
     n += 1;
     return n;
@@ -77,10 +77,11 @@ int tftp_make_rrq_opt(char *buffer, size_t *length, const char *fichier, size_t 
 	if (buffer == NULL || length == NULL || fichier == NULL) return -1;
 	
 	tftp_make_rrq(buffer, length, fichier);
-	int n = *length;
-	
-	n += write_options(buffer + n, "windowsize", noctets);
-	n += write_options(buffer + n, "blksize", nblocs);
+	int n = *length;	
+	//int m = n;
+
+	n += write_options(buffer + n, "windowsize", nblocs);
+	n += write_options(buffer + n, "blksize", noctets);
 	
 	*length = n;
     return 0;
@@ -92,8 +93,8 @@ int tftp_make_oack(char *buffer, size_t *length, size_t noctets, size_t nblocs) 
 	uint16_t *packet = (uint16_t *) buffer;
 	*packet = htons(OACK);
 	int n = 2;
-    n += write_options(buffer + n, "windowsize", noctets);
-    n += write_options(buffer + n, "blksize", nblocs);
+    n += write_options(buffer + n, "windowsize", nblocs);
+    n += write_options(buffer + n, "blksize", noctets);
     *length = n;
     return 0;
 }
@@ -135,11 +136,13 @@ char *extract_data(char *buffer) {
 }
 
 int extract_rrq_opt(options *opts, char *buffer) {
+
     int n = strlen(buffer) + 1;
-    printf("%s\n", buffer + n);
+    n += strlen(buffer + n) + 1;
+    n += strlen(buffer + n) + 1;
 	if(strcmp("windowsize", buffer + n) != 0) {
 		return 0;
-	} 
+	}
     n += strlen("windowsize") + 1;
     opts->windowsize = atoi(buffer + n);
     n += strlen(buffer + n) + 1;
@@ -264,7 +267,7 @@ int tftp_send_ACK(SocketUDP *socket, const AdresseInternet *dst, uint16_t block)
 
 int tftp_wait_DATA(SocketUDP *socket, AdresseInternet *connexion, char *response, size_t *replength) {
 	if (socket == NULL) return -1;
-	int n = recvFromSocketUDP(socket, response, TFTP_SIZE, connexion, TIMEOUT);
+	int n = recvFromSocketUDP(socket, response, *replength, connexion, TIMEOUT);
     if (n < 0) return -1;
     opcode r = extract_opcode(response);
     if(r != DATA) {
@@ -280,6 +283,9 @@ int tftp_send_RRQ_wait_OACK_with_timeout(SocketUDP *socket, const AdresseInterne
     if (tftp_make_rrq_opt(buffer, &length, filename, noctets, nblocs) < 0) {
         return -1;
     }
+    
+
+    
     if (writeToSocketUDP(socket, dst, buffer, length) < 0) {
         return -1;
     }
@@ -290,7 +296,7 @@ int tftp_send_RRQ_wait_OACK_with_timeout(SocketUDP *socket, const AdresseInterne
         *replength = n;
 		if(r != OACK) {
 			tftp_send_error(socket, dst, ERROR, "C'est pas légal!\n");
-			printf("%d\n", (int) r);
+			
 			return -1;
 		}
 		return 0;
@@ -327,7 +333,7 @@ int tftp_wait_ACK(SocketUDP *socket, const AdresseInternet *dst, uint16_t *block
         if (n < 0) return -1;
         opcode r = extract_opcode(response);
         if(r != ACK) {
-            tftp_send_error(socket, dst, 4, "");
+           // tftp_send_error(socket, dst, 4, "");
         }
         *block = extract_blocknumber(response);
     return 0; 

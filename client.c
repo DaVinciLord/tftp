@@ -99,8 +99,7 @@ int trivial_tftp(int block, size_t replength, char *reponse, AdresseInternet *se
                 memset(reponse, 0, TFTP_SIZE);
                 replength = blk_size;
                 // On envois le paquet d'aquitement du bloc reçu
-                tftp_send_ACK_wait_DATA(sock, sock->addr, block, server, reponse, &replength);
-                
+                tftp_send_ACK_wait_DATA(sock, sock->addr, block, server, reponse, &replength);       
             }
         }
     }
@@ -119,17 +118,18 @@ int hard_tftp(int block, size_t replength, char *reponse, AdresseInternet *serve
     }
      
     tftp_send_ACK(sock, server, 0);
-
+	block = 1;
     // On ouvre le fichier
     FILE *file = fopen("aa3d", "w");
     int transferFinished = 0;
     size_t lastblockasked = 1;
     while (transferFinished == 0) {
         //On reçois des données
+        replength = blk_size;
         tftp_wait_DATA(sock, sock->addr, reponse, &replength);
         
         block += extract_blocknumber(reponse) == block + 1 ? 1 : 0;
-        
+        lastblockasked++;
         opcode code = extract_opcode(reponse);
         
         // Réception des données du fichier récupéré
@@ -140,7 +140,7 @@ int hard_tftp(int block, size_t replength, char *reponse, AdresseInternet *serve
                 printf("Transfert terminé\n");
                 transferFinished = 1;
             } else {
-                memset(reponse, 0, TFTP_SIZE);
+                memset(reponse, 0, blk_size);
                 replength = blk_size;
                 if (lastblockasked == window_size)  {
 					// Au bout de windowsize, on envois l'ack du dernier block correct reçu

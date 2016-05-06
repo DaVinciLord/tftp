@@ -60,7 +60,7 @@ void AdresseInternet_free (AdresseInternet *adresse) {
 
 //On récupère les informations
 int AdresseInternet_getinfo (AdresseInternet *adresse, char *nomDNS, int tailleDNS, char *nomPort, int taillePort) {
-    if(adiresse == NULL || (nomDNS == NULL && nomPort == NULL)) {
+    if(adresse == NULL || (nomDNS == NULL && nomPort == NULL)) {
         return -1;
     }
     if(nomDNS != NULL) {

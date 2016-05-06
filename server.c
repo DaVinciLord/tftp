@@ -157,27 +157,30 @@ void *run2(thread_args_2 *arg) {
 	} 
 		tftp_make_oack(buffer, &length, arg->opts->blksize, arg->opts->windowsize);
 		tftp_send_OACK(socket, arg->client_addr, buffer);
-	
-    
+		uint16_t num_block = 1;
+		tftp_wait_ACK(socket, arg->client_addr, &num_block);
 	FILE* file = fopen(arg->filename, "r");
 	if(file != NULL) {
 		size_t data = 0;
-		size_t num_block = 1;
+		num_block = 1;
 		uint16_t curr_block = 0;
-		char packet	[TFTP_SIZE - 4];
+		char packet[arg->opts->blksize];
 		do {
 			do {
-			data = fread(packet, 1, 508, file);
-			tftp_make_data(buffer2, &length, num_block, packet, data);
-			tftp_send_DATA(socket, arg->client_addr, buffer2, length);            
-			memset(buffer2, 0, sizeof(buffer));
+				data = fread(packet, 1, arg->opts->blksize, file);
+				tftp_make_data(buffer2, &length, num_block, packet, data);
+				//printf("%s\n", extract_data(buffer2));
+				tftp_send_DATA(socket, arg->client_addr, buffer2, length);            
+				memset(buffer2, 0, sizeof(buffer2));
+				num_block++;
+				curr_block++;
+			} while ( data >= arg->opts->blksize && curr_block < arg->opts->windowsize);
+
+			tftp_wait_ACK(socket, arg->client_addr, &num_block);
+			fseek(file, num_block*arg->opts->blksize, SEEK_SET);
 			num_block++;
-			curr_block++;
-			} while ( length >= TFTP_SIZE && curr_block <= arg->opts->windowsize);
-			tftp_wait_ACK(socket, arg->client_addr, &curr_block);
-			 fseek(file, num_block*arg->opts->blksize, SEEK_SET);
 			curr_block = 0;
-		} while(length >= TFTP_SIZE); 
+		} while(length >= arg->opts->blksize); 
 		printf("\n-------------------------Envoi terminé----------------------------\n");
 	} else {
 		tftp_send_error(socket, arg->client_addr, FILE_NOT_FOUND, "Le fichier n'existe pas.");
