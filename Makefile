@@ -22,11 +22,10 @@ all: $(LIBS)
 
 client: client.c all
 	gcc $(CFLAGS) $< $(LIBS)  -o client
+	mkdir out
 	
 server: server.c all
 	gcc $(CFLAGS) $< $(LIBS) -o server
-	
-
 
 libTFTP.a: tftp.o
 	ar r $@ $<

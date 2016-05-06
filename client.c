@@ -119,8 +119,13 @@ int hard_tftp(int block, size_t replength, char *reponse, AdresseInternet *serve
      
     tftp_send_ACK(sock, server, 0);
 	block = 1;
-    // On ouvre le fichier
-    FILE *file = fopen("aa3d", "w");
+    //On initialise le chronomètre
+    time_t t = time(NULL);
+    
+    //On ouvre le fichier de sortie
+    char newname[256] = "./out/";
+    strncat(newname, nomfic, 256);
+    FILE *file = fopen(newname, "w");
     int transferFinished = 0;
     size_t lastblockasked = 1;
     while (transferFinished == 0) {
@@ -150,5 +155,7 @@ int hard_tftp(int block, size_t replength, char *reponse, AdresseInternet *serve
             }
         }
     }
+    
+    printf("%d secondes\n" , (int) (time(NULL) - t)); 
     return EXIT_SUCCESS;
 }
